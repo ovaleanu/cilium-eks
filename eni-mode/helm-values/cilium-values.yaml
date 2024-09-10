@@ -1,0 +1,153 @@
+debug:
+  # -- Enable debug logging
+  enabled: false
+
+# cluster:
+#   # -- Name of the cluster. Only required for Cluster Mesh and mutual authentication with SPIRE.
+#   name: default
+#   # -- (int) Unique ID of the cluster. Must be unique across all connected
+#   # clusters and in the range of 1 to 255. Only required for Cluster Mesh,
+#   # may be 0 if Cluster Mesh is not used.
+#   id: 0
+
+
+# -- Roll out cilium agent pods automatically when configmap is updated.
+rollOutCiliumPods: true
+
+bpf:
+  # -- (bool) Enable native IP masquerade support in eBPF
+  # @default -- `false`
+  masquerade: true
+
+cni:
+  # -- Install the CNI configuration and binary files into the filesystem.
+  install: true
+
+  # -- Skip writing of the CNI configuration. This can be used if
+  # writing of the CNI configuration is performed by external automation.
+  customConf: true
+  # -- When defined, configMap will mount the provided value as ConfigMap and
+  # interpret the cniConf variable as CNI configuration file and write it
+  # when the agent starts up
+  configMap: cni-configuration
+
+
+endpointRoutes:
+  # -- Enable use of per endpoint routes instead of routing via
+  # the cilium_host interface.
+  enabled: false
+
+# Activate eBPF Kube-Proxy replacement ; also imply the kube-proxy daemonset is removed
+kubeProxyReplacement: true
+
+k8sServiceHost: ${k8sServiceHost}
+k8sServicePort: 443
+
+nodeinit:
+  # -- Enable the node initialization DaemonSet
+  enabled: true
+
+eni:
+  # -- Enable Elastic Network Interface (ENI) integration.
+  enabled: true
+  # -- Update ENI Adapter limits from the EC2 API
+  updateEC2AdapterLimitViaAPI: true
+  # -- Release IPs not used from the ENI
+  awsReleaseExcessIPs: true
+  # -- Enable ENI prefix delegation
+  awsEnablePrefixDelegation: true
+
+externalIPs:
+  # -- Enable ExternalIPs service support.
+  enabled: false
+
+# fragmentTracking enables IPv4 fragment tracking support in the datapath.
+# fragmentTracking: true
+
+# -- Configure socket LB
+socketLB:
+  # -- Enable socket LB
+  enabled: false
+
+  # -- Disable socket lb for non-root ns. This is used to enable Istio routing rules.
+  hostNamespaceOnly: true
+
+hubble:
+  # -- Enable Hubble (true by default).
+  enabled: false
+
+  relay:
+    # -- Enable Hubble Relay (requires hubble.enabled=true)
+    enabled: false
+
+    # -- Roll out Hubble Relay pods automatically when configmap is updated.
+    rollOutPods: false
+    # -- hubble-relay pod security context
+    podSecurityContext:
+      fsGroup: 65532
+  ui:
+    # -- Whether to enable the Hubble UI.
+    enabled: false
+
+    # -- Roll out Hubble-ui pods automatically when configmap is updated.
+    rollOutPods: false
+
+ipam:
+  # -- Configure IP Address Management mode.
+  # ref: https://docs.cilium.io/en/stable/network/concepts/ipam/
+  mode: "eni"
+
+# -- Configure the eBPF-based ip-masq-agent
+ipMasqAgent:
+  enabled: true
+# the config of nonMasqueradeCIDRs
+config:
+  nonMasqueradeCIDRs: []
+  masqLinkLocal: true
+  masqLinkLocalIPv6: false
+
+# -- Configure N-S k8s service loadbalancing
+nodePort:
+  # -- Enable the Cilium NodePort service implementation.
+  enabled: true
+ipv4:
+  # -- Enable IPv4 support.
+  enabled: true
+
+ipv6:
+  # -- Enable IPv6 support.
+  enabled: false
+
+# -- Enables masquerading of IPv4 traffic leaving the node from endpoints.
+enableIPv4Masquerade: true
+
+# -- Enables masquerading of IPv6 traffic leaving the node from endpoints.
+enableIPv6Masquerade: false
+
+# -- (string) Allows to explicitly specify the IPv4 CIDR for native routing.
+# When specified, Cilium assumes networking for this CIDR is preconfigured and
+# hands traffic destined for that range to the Linux network stack without
+# applying any SNAT.
+# Generally speaking, specifying a native routing CIDR implies that Cilium can
+# depend on the underlying networking stack to route packets to their
+# destination. To offer a concrete example, if Cilium is configured to use
+# direct routing and the Kubernetes CIDR is included in the native routing CIDR,
+# the user must configure the routes to reach pods, either manually or by
+# setting the auto-direct-node-routes flag.
+ipv4NativeRoutingCIDR: "100.0.0.0/8"
+
+# -- cilium-monitor sidecar.
+monitor:
+  # -- Enable the cilium-monitor sidecar.
+  enabled: true
+
+# -- Configure the encapsulation configuration for communication between nodes.
+# Possible values:
+#   - disabled
+#   - vxlan (default)
+#   - geneve
+tunnel: "disabled"
+
+# -- Enable native-routing mode or tunneling mode.
+# @default -- `"tunnel"`
+routingMode: "native"
